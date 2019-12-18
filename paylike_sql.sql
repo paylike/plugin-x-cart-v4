@@ -1,0 +1,22 @@
+DELETE FROM xcart_payment_methods WHERE processor_file='cc_paylike.php';
+DELETE FROM xcart_ccprocessors WHERE processor='cc_paylike.php';
+INSERT INTO `xcart_ccprocessors` (`module_name`, `type`, `processor`, `template`, `param01`, `param02`, `param03`, `param04`, `param05`, `param06`, `param07`, `param08`, `param09`, `disable_ccinfo`, `background`, `testmode`, `is_check`, `is_refund`, `c_template`, `cmpi`, `use_preauth`, `preauth_expire`, `has_preauth`, `capture_min_limit`, `capture_max_limit`) VALUES ('Paylike', 'C', 'cc_paylike.php', 'cc_paylike.tpl', '', '', '', '', '', '', '', 'USD_2', '', 'Y', 'N', 'Y', '', '', 'payments/cc_paylike.tpl', '', 'Y', 0, '', '0%', '0%');
+DELETE FROM xcart_payment_countries WHERE processor='cc_paylike.php';
+INSERT INTO xcart_payment_countries VALUES ('cc_paylike.php','','','');
+
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_primary_currency', value='Select correct ISO currency code for your <U><I>Primary(default) currency symbol</I></U> in this store', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_popup_title_text', value='', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_PopupInfoTitle', value='Modify this <B>lbl_paylike_popup_title_text</B> language variable <a target="_blank" href="languages.php?language={{shop_language}}&topic=&filter=lbl_paylike_popup_title_text">here</a>.', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_popup_description_text', value='', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_PopupInfoDescription', value='Modify this <B>lbl_paylike_popup_description_text</B> language variable <a target="_blank" href="languages.php?language={{shop_language}}&topic=&filter=lbl_paylike_popup_description_text">here</a>.', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_order_not_changed', value='Order has not been changed', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_transaction', value='Paylike transaction ID', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='txt_paylike_button_info', value='You can change the transaction here by clicking appropriate button and this transaction will be updated in the Paylike payment gateway backoffice. Order status of this order in your store will be changed automatically.', topic='Text';
+REPLACE INTO xcart_languages SET code='en', name='txt_paylike_status_below', value='Or you can modify the transaction in the Paylike payment gateway backoffice at first. After that, be sure to change the status of this order below.', topic='Text';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_live_app_key', value='Live App Key', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_live_public_key', value='Live Public Key', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_test_app_key', value='Test App Key', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_test_public_key', value='Test Public Key', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_popup_title', value='Popup title', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_popup_description', value='Popup description', topic='Labels';
+REPLACE INTO xcart_languages SET code='en', name='lbl_paylike_cc_info', value='After submitting your order you will be prompted to enter the necessary credit card info.', topic='Labels';

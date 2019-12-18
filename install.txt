@@ -1,0 +1,203 @@
+INSTALLATION INSTRUCTIONS:
+
+=========================
+I.
+Upload files from the 'files_to_upload' folder to the X-cart store directory.
+ 
+
+=========================
+II.
+Apply SQL patch from the 'paylike_sql.sql' file.
+
+
+=========================
+III.
+Modify the following files:
+
+1)
+admin/cc_processing.php
+
+Find the following line:
+ if (is_readable($xcart_dir . '/modules/gold_display.php')) {
+
+Add before:
+
+ // Paylike: start
+ if (!empty($cc_processor) && $cc_processor == 'cc_paylike.php'){
+     require_once $xcart_dir . '/payment/cc_paylike_api/Currencies.php';
+     $paylike_currencies_obj = new Paylike\Currencies();
+     $smarty->assign('paylike_currencies', $paylike_currencies_obj -> all());    
+ }
+ // Paylike: end
+
+ 
+2)
+include/checkout.php
+
+To the end of this file add:
+ 
+ // Paylike: start 
+ x_load('paylike');
+ func_get_paylike_settings_if_enabled();
+ // Paylike: end
+
+
+4)
+modules/One_Page_Checkout/func.php
+
+Find the following line:
+ return func_ajax_trim_div(func_display('modules/One_Page_Checkout/summary/cart_totals.tpl', $smarty, false));
+
+Add before:
+
+ // Paylike: start
+     x_load('paylike');
+     func_get_paylike_settings_if_enabled();
+ // Paylike: end
+
+ 
+5)
+admin/order.php
+
+Find the following line:
+ if ($mode == 'status_change') {
+
+Add before:
+
+// Paylike: start
+require $xcart_dir . '/include/paylike_order.php';
+// Paylike: end
+
+
+6)
+skin/'{YOUR_SKIN}' OR 'common_files'/main/history_order.tpl
+
+Find the following line:
+ {if $order.fmf and $order.fmf.blocked}
+
+Add before:
+
+{* Paylike: start *}
+{if $order.extra.paylike_txnid ne ""}
+{include file="main/paylike_buttons.tpl"}
+{/if}
+{* Paylike: end *}
+
+
+7)
+skin/'{YOUR_SKIN}' OR 'common_files'/modules/Fast_Lane_Checkout/checkout_js.tpl
+
+Find the following line:
+ if (result && checkDBClick()) {
+
+Add before:
+
+ // Paylike: start
+     if ($('#cc_processor_'+ {/literal}{$paymentid}{literal}).val() !== undefined && $('#cc_processor_'+ {/literal}{$paymentid}{literal}).val() == "paylike") {
+       pay(document.forms.checkout_form);
+       return false;
+     }
+ // Paylike: end
+
+
+8) 
+skin/'{YOUR_SKIN}' OR 'common_files'/modules/One_Page_Checkout/ajax.checkout.js
+
+a)
+Find the following line:
+ if (!payments[this.paymentid].iframe || is_mobile) {
+
+Add before:
+
+ // Paylike: start
+   if ($('#cc_processor_'+ this.paymentid).val() !== undefined && $('#cc_processor_'+ this.paymentid).val() == "paylike") {
+     pay(elm);
+     return false;
+   }
+ // Paylike: end
+
+
+b)
+Find the following line: 
+ ajax.widgets.checkout.obj.prototype.enablePaymentSelection = function() {
+ 
+Add After:
+
+ // Paylike: start
+   if ($('#cc_processor_'+ this.paymentid).val() !== undefined && $('#cc_processor_'+ this.paymentid).val() == "paylike") {
+     this._updateTotals();
+   }
+ // Paylike: end
+
+
+9)
+skin/'{YOUR_SKIN}' OR 'common_files'/modules/One_Page_Checkout/summary/cart_totals.tpl
+
+Find the following lines:
+
+ {if $cart_totals_standalone}
+ {load_defer_code type="css"}
+ {load_defer_code type="js"}
+ {/if}
+
+  {/if}{*if not $Active_modules.BOngo_International or not $Cart.Bongo_LAndedCost*}
+ 
+Add After:
+
+ {* Paylike: start *}
+ {if $paylike_payment_cc_data}
+ {include file="payments/cc_paylike_form.tpl"}
+ {/if}
+ {* Paylike: end *}
+
+
+=========================
+IV.
+Clear X-Cart cache.
+
+You can do it here:
+www.YOUR_XCART_STORE/admin/tools.php#cleartmp
+
+ 
+=========================
+V. 
+
+Now you can enable the 'Paylike' payment gateway.
+
+1)
+Open the following page in the X-cart admin area:
+Top menu 'Settings' tab -> 'Payment methods' page -> 'Payment gateways' tab.
+
+2)
+Select the 'Paylike' in the 'Payment gateways' selectbox and click the 'Add' button.
+
+3)
+Find your newly added 'Paylike' payment gateway in the 'Payment methods' tab.
+(It should be at the bottom of page before the 'Apply changes' button.)
+
+4)
+Check the checkbox near the 'Paylike' payment gateway and click the 'Apply changes' button.
+
+5)
+Click to the 'Configure' link near the 'Credit Card processor: Paylike' sentence.
+
+6)
+In the opened 'Paylike' page configure your payment processing gateway and click the 'Update' button.
+
+Note: 
+During testing recommended to select the 'Auth only' value in the 'Action to be performed on order placement' field.
+Orders will be pre-authorized by the payment gateway. 
+To capture the authorized amount or void the transaction, login to the Paylike payment gateway backoffice and go to the edit order screen. Scroll down to the customer notes, and bellow them you will find buttons to capture/decline the payment
+
+7)
+Place a test order and go to the admin area and find your placed test order there.
+On the 'Order details' page you need to find the '+ Payment gateway log' link. It is under the 'Customer notes' and 'Status' fields.
+Click to this '+ Payment gateway log' link and you will see your order 'Transaction ID' there.
+
+8)
+Open the Paylike payment gateway backoffice site (https://app.paylike.io/)
+By 'Transaction ID' value you will find any order there. Use the 'Search by transaction ID' field there for this purpose.
+
+
+=========================
+That is all!
